@@ -1,9 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Helmet } from "react-helmet-async";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+const signInForm = z.object({
+  email: z.string().email(),
+});
+
+type SignInFormData = z.infer<typeof SignInFormData>;
 
 export function SignIn() {
+  const { register, handleSubmit, formState: {isSubmitting} } = useForm<SignInFormData>({
+    resolver: zodResolver(signInForm),
+  });
+
+  async function handleSignIn(data: SignInFormData) {
+    console.log(data);
+  }
+
   return (
     <>
       <Helmet title="Login" />
@@ -18,12 +35,17 @@ export function SignIn() {
             </p>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit(handleSignIn)}>
             <div className="space-y-2">
               <Label htmlFor="email">Seu e-mail</Label>
-              <Input id="email" type="email" placeholder="Digite seu e-mail" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="Digite seu e-mail"
+                {...register("email")}
+              />
             </div>
-            <Button className="w-full">Acessar painel</Button>
+            <Button className="w-full" disabled={isSubmitting}>Acessar painel</Button>
           </form>
         </div>
       </div>
