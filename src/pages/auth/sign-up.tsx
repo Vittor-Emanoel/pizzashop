@@ -6,6 +6,8 @@ import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { registerRestaurant } from "@/service/register-restaurant";
+import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -28,12 +30,22 @@ export function SignUp() {
   });
   const navigate = useNavigate();
 
-  async function handleSignUp(data: SignUpFormData) {
-    console.log(data);
+  const { mutateAsync: registerRestaurantFn } = useMutation({
+    mutationFn: registerRestaurant,
+  });
+
+  async function handleSignUp({
+    email,
+    managerName,
+    phone,
+    restaurantName,
+  }: SignUpFormData) {
+    await registerRestaurantFn({ email, managerName, phone, restaurantName });
+
     toast.success("Restaurante cadastrado com sucesso!", {
       action: {
         label: "Login",
-        onClick: () => navigate("/sign-in"),
+        onClick: () => navigate(`/sign-in?email=${email}`),
       },
     });
   }
